@@ -9,21 +9,23 @@
 /* Begin PBXBuildFile section */
 		34B5529527E1662400F0FBAD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B5529427E1662400F0FBAD /* AppDelegate.swift */; };
 		34B5529727E1662400F0FBAD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B5529627E1662400F0FBAD /* SceneDelegate.swift */; };
-		34B5529927E1662400F0FBAD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B5529827E1662400F0FBAD /* ViewController.swift */; };
 		34B5529C27E1662400F0FBAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B5529A27E1662400F0FBAD /* Main.storyboard */; };
 		34B5529E27E1662900F0FBAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34B5529D27E1662900F0FBAD /* Assets.xcassets */; };
 		34B552A127E1662900F0FBAD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B5529F27E1662900F0FBAD /* LaunchScreen.storyboard */; };
+		34B552A927E167BC00F0FBAD /* Superhero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B552A827E167BC00F0FBAD /* Superhero.swift */; };
+		34B552AB27E1683B00F0FBAD /* CurrentPartyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B552AA27E1683B00F0FBAD /* CurrentPartyTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		34B5529127E1662400F0FBAD /* Lab3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lab3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		34B5529427E1662400F0FBAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		34B5529627E1662400F0FBAD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		34B5529827E1662400F0FBAD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		34B5529B27E1662400F0FBAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		34B5529D27E1662900F0FBAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		34B552A027E1662900F0FBAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		34B552A227E1662900F0FBAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		34B552A827E167BC00F0FBAD /* Superhero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Superhero.swift; sourceTree = "<group>"; };
+		34B552AA27E1683B00F0FBAD /* CurrentPartyTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPartyTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,13 +58,14 @@
 		34B5529327E1662400F0FBAD /* Lab3 */ = {
 			isa = PBXGroup;
 			children = (
+				34B552AA27E1683B00F0FBAD /* CurrentPartyTableViewController.swift */,
 				34B5529427E1662400F0FBAD /* AppDelegate.swift */,
 				34B5529627E1662400F0FBAD /* SceneDelegate.swift */,
-				34B5529827E1662400F0FBAD /* ViewController.swift */,
 				34B5529A27E1662400F0FBAD /* Main.storyboard */,
 				34B5529D27E1662900F0FBAD /* Assets.xcassets */,
 				34B5529F27E1662900F0FBAD /* LaunchScreen.storyboard */,
 				34B552A227E1662900F0FBAD /* Info.plist */,
+				34B552A827E167BC00F0FBAD /* Superhero.swift */,
 			);
 			path = Lab3;
 			sourceTree = "<group>";
@@ -138,9 +141,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34B5529927E1662400F0FBAD /* ViewController.swift in Sources */,
 				34B5529527E1662400F0FBAD /* AppDelegate.swift in Sources */,
 				34B5529727E1662400F0FBAD /* SceneDelegate.swift in Sources */,
+				34B552AB27E1683B00F0FBAD /* CurrentPartyTableViewController.swift in Sources */,
+				34B552A927E167BC00F0FBAD /* Superhero.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
