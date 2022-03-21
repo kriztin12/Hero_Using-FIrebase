@@ -1,87 +1,82 @@
 //
-//  CurrentPartyTableViewController.swift
+//  AllHeroesTableViewController.swift
 //  Lab3
 //
-//  Created by Kriztin Abellon on 16/3/2022.
+//  Created by Kriztin Abellon on 21/3/2022.
 //
 
 import UIKit
 
-class CurrentPartyTableViewController: UITableViewController, addSuperheroDelegate {
-    func addSuperhero(_ newHero: Superhero) -> Bool {
-        if currentParty.count >= 6{
-            return false
-        }
-        
-        tableView.performBatchUpdates({
-            currentParty.append(newHero)
-            tableView.insertRows(at: [IndexPath(row: currentParty.count - 1, section: SECTION_HERO)], with: .automatic)
-        }, completion: nil)
-        tableView.reloadSections([SECTION_INFO], with: .automatic)
-        return true
-    }
+class AllHeroesTableViewController: UITableViewController {
 
-    // section numbers
+    
+    
+
     let SECTION_HERO = 0
     let SECTION_INFO = 1
     
-    // identifiers used
-    let CELL_HERO = "heroCell"
-    let CELL_INFO = "partySizeCell"
+    let heroCell = "heroCell"
+    let totalCell = "totalCell"
     
-    var currentParty: [Superhero] = []
+    var allHeroes: [Superhero] = []
+    
+    // to prevent strong reference cycles
+    weak var superHeroDelegate: addSuperheroDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        createDefaultHeroes()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
-
+    
+    func createDefaultHeroes(){
+        allHeroes.append(Superhero(name: "Bruce Wayne", abilities: "Money", universe: .dc))
+        allHeroes.append(Superhero(name: "Superman", abilities: "Super Powered Alien", universe: .dc))
+        allHeroes.append(Superhero(name: "Wonder Woman", abilities: "Goddess", universe: .dc))
+        allHeroes.append(Superhero(name: "The Flash", abilities: "Speed", universe: .dc))
+        allHeroes.append(Superhero(name: "Green Lantern", abilities: "Power Ring", universe: .dc))
+        allHeroes.append(Superhero(name: "Cyborg", abilities: "Robot Beep Beep", universe: .dc))
+        allHeroes.append(Superhero(name: "Aquaman", abilities: "Atlantian", universe: .dc))
+    }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        // 2 sections so return 2
         return 2
     }
 
-    // determines number of rows in a specified section
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        // need to return a different value depending on if the section is for our
-        // current party or for info section
         switch section {
         case SECTION_INFO:
             return 1
         case SECTION_HERO:
-            return currentParty.count
+            return allHeroes.count
         default:
             return 0
         }
+       
     }
 
-    // creates the cells to be displayed to the user
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // generates the cell object
-        // section tells us what kind of cell we need to generate
-        // row tells which object should display information for in the cell
         //let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
         // Configure the cell...
-        
+
         // if hero then generate the cells for that
         if indexPath.section == SECTION_HERO {
         // Configure and return a hero cell
-            let heroCell = tableView.dequeueReusableCell(withIdentifier: CELL_HERO, for: indexPath)
+            let heroCell = tableView.dequeueReusableCell(withIdentifier: heroCell, for: indexPath)
             
             var content = heroCell.defaultContentConfiguration()
-            let hero = currentParty[indexPath.row]
+            let hero = allHeroes[indexPath.row]
             content.text = hero.name
             content.secondaryText = hero.abilities
             heroCell.contentConfiguration = content
@@ -90,19 +85,17 @@ class CurrentPartyTableViewController: UITableViewController, addSuperheroDelega
         }
         else {
             // type is generate whatever has been specified with the identifier
-            // Configure and return an info cell instead
-            let infoCell = tableView.dequeueReusableCell(withIdentifier: CELL_INFO, for: indexPath)
+            // since custom cell, need to dequeue the cell and then cast it to its correct
+            // cell type
+            // forced cast = as!
+            let infoCell = tableView.dequeueReusableCell(withIdentifier: totalCell, for: indexPath) as! HeroCountTableViewCell
             
-            var content = infoCell.defaultContentConfiguration()
-            if currentParty.isEmpty {
-                content.text = "No Heroes in Party. Tap + to add some."
-            } else {
-                content.text = "\(currentParty.count)/6 Heroes in Party"
-            }
-            infoCell.contentConfiguration = content
+            
+            infoCell.totalLabel?.text = "\(allHeroes.count) heroes in the database"
             return infoCell
         }
     }
+    
 
     
     // Override to support conditional editing of the table view.
@@ -115,15 +108,15 @@ class CurrentPartyTableViewController: UITableViewController, addSuperheroDelega
             return false
         }
     }
+    
 
+    
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        
-        // handles the deletion of rows and only deletes if its a HERO cell
         if editingStyle == .delete && indexPath.section == SECTION_HERO {
-            // perform batch updates, these three steps need to be done in a single batch
+            // Delete the row from the data source
             tableView.performBatchUpdates({
-                self.currentParty.remove(at: indexPath.row)
+                self.allHeroes.remove(at: indexPath.row)
                 self.tableView.deleteRows(at: [indexPath], with: .fade)
                 self.tableView.reloadSections([SECTION_INFO], with: .automatic)
             }, completion: nil)
@@ -132,6 +125,29 @@ class CurrentPartyTableViewController: UITableViewController, addSuperheroDelega
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
+    
+    // method allows us to provide behaviour for when the user selects a row within the Table View.
+    // only work if selection of the cell is enabled
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let superHeroDelegate = superHeroDelegate {
+            if superHeroDelegate.addSuperhero(allHeroes[indexPath.row]) {
+                navigationController?.popViewController(animated: false)
+                return
+            }
+            else{
+                displayMessage(title: "Party Full", message: "Unable to add more members to the party")
+            }
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    // display message function (ALERT function)
+    func displayMessage(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
 
     /*
     // Override to support rearranging the table view.
@@ -148,18 +164,14 @@ class CurrentPartyTableViewController: UITableViewController, addSuperheroDelega
     }
     */
 
-
+    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
-        if segue.identifier == "allHeroesSegue"{
-            let destination = segue.destination as! AllHeroesTableViewController
-            destination.superHeroDelegate = self
-        }
     }
-
+    */
 
 }
