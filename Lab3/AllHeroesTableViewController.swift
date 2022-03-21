@@ -7,10 +7,23 @@
 
 import UIKit
 
-class AllHeroesTableViewController: UITableViewController {
-
+class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text?.lowercased() else {
+            return
+        }
+        
+        if searchText.count > 0 {
+            filteredHeroes = allHeroes.filter({ (hero: Superhero) -> Bool in
+                return (hero.name?.lowercased().contains(searchText) ?? false)
+            })
+        } else{
+            filteredHeroes = allHeroes
+        }
+        tableView.reloadData()
+    }
     
-    
+    var filteredHeroes: [Superhero] = []
 
     let SECTION_HERO = 0
     let SECTION_INFO = 1
@@ -27,6 +40,14 @@ class AllHeroesTableViewController: UITableViewController {
         super.viewDidLoad()
         
         createDefaultHeroes()
+        filteredHeroes = allHeroes
+        
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        // tell user to enter a search item
+        searchController.searchBar.placeholder = "Search All Heroes"
+        navigationItem.searchController = searchController
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -57,7 +78,7 @@ class AllHeroesTableViewController: UITableViewController {
         case SECTION_INFO:
             return 1
         case SECTION_HERO:
-            return allHeroes.count
+            return filteredHeroes.count
         default:
             return 0
         }
@@ -76,7 +97,7 @@ class AllHeroesTableViewController: UITableViewController {
             let heroCell = tableView.dequeueReusableCell(withIdentifier: heroCell, for: indexPath)
             
             var content = heroCell.defaultContentConfiguration()
-            let hero = allHeroes[indexPath.row]
+            let hero = filteredHeroes[indexPath.row]
             content.text = hero.name
             content.secondaryText = hero.abilities
             heroCell.contentConfiguration = content
@@ -91,7 +112,7 @@ class AllHeroesTableViewController: UITableViewController {
             let infoCell = tableView.dequeueReusableCell(withIdentifier: totalCell, for: indexPath) as! HeroCountTableViewCell
             
             
-            infoCell.totalLabel?.text = "\(allHeroes.count) heroes in the database"
+            infoCell.totalLabel?.text = "\(filteredHeroes.count) heroes in the database"
             return infoCell
         }
     }
@@ -116,7 +137,11 @@ class AllHeroesTableViewController: UITableViewController {
         if editingStyle == .delete && indexPath.section == SECTION_HERO {
             // Delete the row from the data source
             tableView.performBatchUpdates({
-                self.allHeroes.remove(at: indexPath.row)
+                // delete row in both allHeroes and filteredHeroes
+                if let index = self.allHeroes.firstIndex(of: filteredHeroes[indexPath.row]){
+                    self.allHeroes.remove(at: index)
+                }
+                self.filteredHeroes.remove(at: indexPath.row)
                 self.tableView.deleteRows(at: [indexPath], with: .fade)
                 self.tableView.reloadSections([SECTION_INFO], with: .automatic)
             }, completion: nil)
@@ -130,7 +155,7 @@ class AllHeroesTableViewController: UITableViewController {
     // only work if selection of the cell is enabled
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let superHeroDelegate = superHeroDelegate {
-            if superHeroDelegate.addSuperhero(allHeroes[indexPath.row]) {
+            if superHeroDelegate.addSuperhero(filteredHeroes[indexPath.row]) {
                 navigationController?.popViewController(animated: false)
                 return
             }
