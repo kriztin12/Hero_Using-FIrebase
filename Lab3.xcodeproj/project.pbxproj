@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		347986A127E898E6000CC12E /* AddSuperheroDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347986A027E898E6000CC12E /* AddSuperheroDelegate.swift */; };
+		347986A327E8DE60000CC12E /* CreateHeroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347986A227E8DE60000CC12E /* CreateHeroViewController.swift */; };
 		34B5529527E1662400F0FBAD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B5529427E1662400F0FBAD /* AppDelegate.swift */; };
 		34B5529727E1662400F0FBAD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B5529627E1662400F0FBAD /* SceneDelegate.swift */; };
 		34B5529C27E1662400F0FBAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B5529A27E1662400F0FBAD /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		347986A027E898E6000CC12E /* AddSuperheroDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSuperheroDelegate.swift; sourceTree = "<group>"; };
+		347986A227E8DE60000CC12E /* CreateHeroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateHeroViewController.swift; sourceTree = "<group>"; };
 		34B5529127E1662400F0FBAD /* Lab3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lab3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		34B5529427E1662400F0FBAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		34B5529627E1662400F0FBAD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 				34B552AC27E8933F00F0FBAD /* AllHeroesTableViewController.swift */,
 				34B552AE27E8936100F0FBAD /* HeroCountTableViewCell.swift */,
 				347986A027E898E6000CC12E /* AddSuperheroDelegate.swift */,
+				347986A227E8DE60000CC12E /* CreateHeroViewController.swift */,
 			);
 			path = Lab3;
 			sourceTree = "<group>";
@@ -152,6 +155,7 @@
 			files = (
 				34B5529527E1662400F0FBAD /* AppDelegate.swift in Sources */,
 				34B5529727E1662400F0FBAD /* SceneDelegate.swift in Sources */,
+				347986A327E8DE60000CC12E /* CreateHeroViewController.swift in Sources */,
 				34B552AB27E1683B00F0FBAD /* CurrentPartyTableViewController.swift in Sources */,
 				34B552AF27E8936100F0FBAD /* HeroCountTableViewCell.swift in Sources */,
 				34B552AD27E8933F00F0FBAD /* AllHeroesTableViewController.swift in Sources */,

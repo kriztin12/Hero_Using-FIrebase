@@ -7,7 +7,16 @@
 
 import UIKit
 
-class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdating {
+class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdating, addSuperheroDelegate {
+    func addSuperhero(_ newHero: Superhero) -> Bool {
+        tableView.performBatchUpdates({
+            allHeroes.append(newHero)
+            filteredHeroes.append(newHero)
+            tableView.insertRows(at: [IndexPath(row: filteredHeroes.count - 1, section: SECTION_HERO)], with: .automatic)
+        }, completion: nil)
+        return true
+    }
+    
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text?.lowercased() else {
             return
@@ -189,14 +198,18 @@ class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdati
     }
     */
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
+        if segue.identifier == "createHeroSegue" {
+            let destination = segue.destination as! CreateHeroViewController
+            destination.superHeroDelegate = self
+        }
     }
-    */
+    
 
 }

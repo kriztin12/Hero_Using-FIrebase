@@ -7,15 +7,15 @@
 
 import UIKit
 
+enum Universe: Int{
+    case marvel = 0
+    case dc = 1
+}
+
 class Superhero: NSObject {
     var name: String?
     var abilities: String?
     var universe: Universe?
-    
-    enum Universe: Int{
-        case marvel = 0
-        case dc = 1
-    }
     
     init(name: String?, abilities: String?, universe: Universe?) {
         self.name = name
