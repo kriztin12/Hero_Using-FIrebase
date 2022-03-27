@@ -7,15 +7,19 @@
 
 import UIKit
 
-class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdating, addSuperheroDelegate {
-    func addSuperhero(_ newHero: Superhero) -> Bool {
-        tableView.performBatchUpdates({
-            allHeroes.append(newHero)
-            filteredHeroes.append(newHero)
-            tableView.insertRows(at: [IndexPath(row: filteredHeroes.count - 1, section: SECTION_HERO)], with: .automatic)
-        }, completion: nil)
-        return true
+class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdating, DatabaseListener {
+    func onTeamChange(change: DatabaseChange, teamHeroes: [Superhero]) {
+        // do nothing
     }
+    
+    func onAllHeroesChange(change: DatabaseChange, heroes: [Superhero]) {
+        allHeroes = heroes
+        updateSearchResults(for: navigationItem.searchController!)
+    }
+    
+    
+    var listenerType = ListenerType.heroes
+    weak var databaseController: DatabaseProtocol?
     
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text?.lowercased() else {
@@ -48,7 +52,9 @@ class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdati
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        createDefaultHeroes()
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        databaseController = appDelegate?.databaseController
+        
         filteredHeroes = allHeroes
         
         let searchController = UISearchController(searchResultsController: nil)
@@ -64,16 +70,17 @@ class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdati
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
-    func createDefaultHeroes(){
-        allHeroes.append(Superhero(name: "Bruce Wayne", abilities: "Money", universe: .dc))
-        allHeroes.append(Superhero(name: "Superman", abilities: "Super Powered Alien", universe: .dc))
-        allHeroes.append(Superhero(name: "Wonder Woman", abilities: "Goddess", universe: .dc))
-        allHeroes.append(Superhero(name: "The Flash", abilities: "Speed", universe: .dc))
-        allHeroes.append(Superhero(name: "Green Lantern", abilities: "Power Ring", universe: .dc))
-        allHeroes.append(Superhero(name: "Cyborg", abilities: "Robot Beep Beep", universe: .dc))
-        allHeroes.append(Superhero(name: "Aquaman", abilities: "Atlantian", universe: .dc))
+    // automatically register itself to receive updates from the database when the view is about to appear on screen and deregister itself when its about to disappear
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        databaseController?.addListener(listener: self)
     }
-
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        databaseController?.removieListener(listener: self)
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -145,15 +152,17 @@ class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdati
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete && indexPath.section == SECTION_HERO {
             // Delete the row from the data source
-            tableView.performBatchUpdates({
-                // delete row in both allHeroes and filteredHeroes
-                if let index = self.allHeroes.firstIndex(of: filteredHeroes[indexPath.row]){
-                    self.allHeroes.remove(at: index)
-                }
-                self.filteredHeroes.remove(at: indexPath.row)
-                self.tableView.deleteRows(at: [indexPath], with: .fade)
-                self.tableView.reloadSections([SECTION_INFO], with: .automatic)
-            }, completion: nil)
+//            tableView.performBatchUpdates({
+//                // delete row in both allHeroes and filteredHeroes
+//                if let index = self.allHeroes.firstIndex(of: filteredHeroes[indexPath.row]){
+//                    self.allHeroes.remove(at: index)
+//                }
+//                self.filteredHeroes.remove(at: indexPath.row)
+//                self.tableView.deleteRows(at: [indexPath], with: .fade)
+//                self.tableView.reloadSections([SECTION_INFO], with: .automatic)
+//            }, completion: nil)
+            let hero = filteredHeroes[indexPath.row]
+            databaseController?.deleteSuperhero(hero: hero)
             
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -163,15 +172,24 @@ class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdati
     // method allows us to provide behaviour for when the user selects a row within the Table View.
     // only work if selection of the cell is enabled
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let superHeroDelegate = superHeroDelegate {
-            if superHeroDelegate.addSuperhero(filteredHeroes[indexPath.row]) {
-                navigationController?.popViewController(animated: false)
-                return
-            }
-            else{
-                displayMessage(title: "Party Full", message: "Unable to add more members to the party")
-            }
+        let hero = filteredHeroes[indexPath.row]
+        let heroAdded = databaseController?.addHeroToTeam(hero: hero, team: databaseController!.defaultTeam) ?? false
+        
+        if heroAdded {
+            navigationController?.popViewController(animated: false)
+            return
         }
+        
+//        if let superHeroDelegate = superHeroDelegate {
+//            if superHeroDelegate.addSuperhero(filteredHeroes[indexPath.row]) {
+//                navigationController?.popViewController(animated: false)
+//                return
+//            }
+//            else{
+//                displayMessage(title: "Party Full", message: "Unable to add more members to the party")
+//            }
+//        }
+        displayMessage(title: "Party Full", message: "Unable to add more members to the party")
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -207,7 +225,7 @@ class AllHeroesTableViewController: UITableViewController, UISearchResultsUpdati
         // Pass the selected object to the new view controller.
         if segue.identifier == "createHeroSegue" {
             let destination = segue.destination as! CreateHeroViewController
-            destination.superHeroDelegate = self
+            // destination.superHeroDelegate = self
         }
     }
     

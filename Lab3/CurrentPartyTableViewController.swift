@@ -7,18 +7,33 @@
 
 import UIKit
 
-class CurrentPartyTableViewController: UITableViewController, addSuperheroDelegate {
+class CurrentPartyTableViewController: UITableViewController, DatabaseListener {
+    var listenerType: ListenerType = .team
+    weak var databaseController: DatabaseProtocol?
+    
+    func onTeamChange(change: DatabaseChange, teamHeroes: [Superhero]) {
+        currentParty = teamHeroes
+        tableView.reloadData()
+    }
+    
+    func onAllHeroesChange(change: DatabaseChange, heroes: [Superhero]) {
+        // do nothing
+    }
+    
+    
     func addSuperhero(_ newHero: Superhero) -> Bool {
-        if currentParty.count >= 6{
-            return false
-        }
+//        if currentParty.count >= 6{
+//            return false
+//        }
+//
+//        tableView.performBatchUpdates({
+//            currentParty.append(newHero)
+//            tableView.insertRows(at: [IndexPath(row: currentParty.count - 1, section: SECTION_HERO)], with: .automatic)
+//        }, completion: nil)
+//        tableView.reloadSections([SECTION_INFO], with: .automatic)
+//        return true
         
-        tableView.performBatchUpdates({
-            currentParty.append(newHero)
-            tableView.insertRows(at: [IndexPath(row: currentParty.count - 1, section: SECTION_HERO)], with: .automatic)
-        }, completion: nil)
-        tableView.reloadSections([SECTION_INFO], with: .automatic)
-        return true
+        return databaseController?.addHeroToTeam(hero: newHero, team: databaseController!.defaultTeam) ?? false
     }
 
     // section numbers
@@ -34,12 +49,24 @@ class CurrentPartyTableViewController: UITableViewController, addSuperheroDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        databaseController = appDelegate?.databaseController
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        databaseController?.addListener(listener: self)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        databaseController?.removieListener(listener: self)
     }
 
 
@@ -122,11 +149,12 @@ class CurrentPartyTableViewController: UITableViewController, addSuperheroDelega
         // handles the deletion of rows and only deletes if its a HERO cell
         if editingStyle == .delete && indexPath.section == SECTION_HERO {
             // perform batch updates, these three steps need to be done in a single batch
-            tableView.performBatchUpdates({
-                self.currentParty.remove(at: indexPath.row)
-                self.tableView.deleteRows(at: [indexPath], with: .fade)
-                self.tableView.reloadSections([SECTION_INFO], with: .automatic)
-            }, completion: nil)
+//            tableView.performBatchUpdates({
+//                self.currentParty.remove(at: indexPath.row)
+//                self.tableView.deleteRows(at: [indexPath], with: .fade)
+//                self.tableView.reloadSections([SECTION_INFO], with: .automatic)
+//            }, completion: nil)
+            self.databaseController?.removeHeroFromTeam(hero: currentParty[indexPath.row], team: databaseController!.defaultTeam)
             
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -157,7 +185,7 @@ class CurrentPartyTableViewController: UITableViewController, addSuperheroDelega
         // Pass the selected object to the new view controller.
         if segue.identifier == "allHeroesSegue"{
             let destination = segue.destination as! AllHeroesTableViewController
-            destination.superHeroDelegate = self
+            //destination.superHeroDelegate = self
         }
     }
 
